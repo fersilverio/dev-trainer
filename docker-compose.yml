@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  blue_api:
+    build: ./blue-api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./blue-api/src:/usr/src/app/src
+    command: npm run start:dev
+    environment:
+      - PORT=3000
+  black_api:
+    build: ./black-api
+    volumes:
+      - ./black-api/src:/usr/src/app/src
+    command: npm run start:dev
+  nats:
+    image: nats
+    ports:
+      - 4222:4222
+  black_db:
+    image: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: docker
+      MYSQL_DATABASE: black_db
+      MYSQL_USER: black
+      MYSQL_PASSWORD: docker
