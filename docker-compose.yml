@@ -14,7 +14,6 @@ services:
     build: ./black-api
     volumes:
       - ./black-api/src:/usr/src/app/src
-    command: npm run start:dev
   nats:
     image: nats
     ports:

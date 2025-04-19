@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, InternalServerErrorException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -10,7 +10,11 @@ export class UsersMicroserviceController {
 
   @MessagePattern({ cmd: 'createUser' })
   create(@Payload() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+    try {
+      return this.usersService.create(createUserDto);
+    } catch (err) {
+      throw new InternalServerErrorException("[BLACK-API] - Could not create new user.")
+    }
   }
 
   // @Get()

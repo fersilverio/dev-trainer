@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Inject } from '@nestjs/common';
+import { Controller, Post, Body, Inject, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ClientProxy } from '@nestjs/microservices';
@@ -6,15 +6,25 @@ import { ClientProxy } from '@nestjs/microservices';
 
 @Controller('users')
 export class UsersController {
+  private logger = new Logger(UsersController.name);
+
   constructor(
     private readonly usersService: UsersService,
 
   ) { }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    console.log("blue-api controller")
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    try {
+      return await this.usersService.create(createUserDto);
+    } catch (err) {
+      if (err instanceof HttpException) {
+        this.logger.error(err.message);
+        throw err;
+      } else {
+        throw new HttpException('User could not be created.', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
   }
 
   // @Get()

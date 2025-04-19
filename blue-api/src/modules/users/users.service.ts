@@ -1,14 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class UsersService {
   constructor(@Inject('NATS_SERVICE') private readonly nats: ClientProxy) { }
-  create(createUserDto: CreateUserDto) {
-    console.log("blue-api service")
-    return this.nats.send({ cmd: 'createUser' }, createUserDto)
-    //return 'This action adds a new user';
+  
+  async create(createUserDto: CreateUserDto) {
+    const response = await firstValueFrom(this.nats.send({ cmd: 'createUser' }, createUserDto))
+    return response;
   }
 
   // findAll() {
