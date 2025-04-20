@@ -16,13 +16,16 @@ export class UsersService {
     return this.usersRepository.findAll();
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    return this.usersRepository.findOne(id);
+  }
+
+  // async update(data: {id: number, updateUserDto: UpdateUserDto}) {
+  //   console.log("black service")
+  //   console.log(data.id, data.updateUserDto);
+  //   return this.usersRepository.update(data.id, data.updateUserDto);
   // }
 
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
 
   // remove(id: number) {
   //   return `This action removes a #${id} user`;

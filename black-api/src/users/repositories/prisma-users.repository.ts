@@ -3,6 +3,7 @@ import { CreateUserDto } from "../dto/create-user.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
 import { User } from "../entities/user.entity";
 import { UsersRepository } from "./users.repository";
+import { NotFoundException } from "@nestjs/common";
 
 export class PrismaUsersRepository implements UsersRepository {
     constructor(private readonly prisma: PrismaService) {}
@@ -11,16 +12,29 @@ export class PrismaUsersRepository implements UsersRepository {
         const newUser = await this.prisma.user.create({ data });
         return newUser;
     }
-    // findOne(id: number): Promise<User> {
-    //     throw new Error("Method not implemented.");
-    // }
+
+    async findOne(id: number): Promise<User> {
+        const user = await this.prisma.user.findUnique({where: {id}});
+
+        if (!user) {
+            throw new NotFoundException();
+        }
+
+        return user;
+    }
+
     async findAll(): Promise<User[]> {
         const users = await this.prisma.user.findMany();
         return users;
     }
-    // update(id: number, data: UpdateUserDto): Promise<User> {
-    //     throw new Error("Method not implemented.");
+    
+    // async update(id: number, data: UpdateUserDto): Promise<User> {
+    //     console.log(data);
+
+    //     const updatedUser = await this.prisma.user.update({where: {id}, data});
+    //     return updatedUser;
     // }
+
     // delete(id: number): Promise<User> {
     //     throw new Error("Method not implemented.");
     // }

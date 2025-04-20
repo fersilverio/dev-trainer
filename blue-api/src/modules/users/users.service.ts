@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -25,12 +26,20 @@ export class UsersService {
     return response;
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} user`;
-  // }
+  async findOne(id: number) {
+    const response = this.sendMessage('BLACKAPI.FINDONEUSER', id);
+    return response;
+  }
 
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
+  // async update(id: number, updateUserDto: UpdateUserDto) {
+  //   const response = this.sendMessage(
+  //     'BLACKAPI.UPDATEUSER', 
+  //     {
+  //       id, 
+  //       data: updateUserDto
+  //     }
+  //   );
+  //   return response;
   // }
 
   // remove(id: number) {

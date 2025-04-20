@@ -22,18 +22,27 @@ export class UsersMicroserviceController {
     try {
       return this.usersService.findAll();
     } catch (err) {
-      throw new InternalServerErrorException("[BLACK-API] - Could not find users.")
+      throw new InternalServerErrorException("[BLACK-API] - Could not find users.");
     }
   }
 
+  @MessagePattern({cmd: 'BLACKAPI.FINDONEUSER'})
+  findOne(@Payload() id: number) {
+    try {
+      return this.usersService.findOne(id);
+    } catch (err) {
+      throw new InternalServerErrorException(`[BLACK-API] - Could not find user with id ${id}.`);
+    }
+  }
 
-  // findOne(@Param('id') id: string) {
-  //   return this.usersService.findOne(+id);
-  // }
-
-
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.usersService.update(+id, updateUserDto);
+  // @MessagePattern({cmd: 'BLACKAPI.UPDATEUSER'})
+  // update(@Payload() data: {id: number,updateUserDto: UpdateUserDto}) {
+  //   try {
+  //     console.log(data, "black controller")
+  //     return this.usersService.update(data);
+  //   } catch (err) {
+  //     throw new InternalServerErrorException(`[BLACK-API] - Could not update user with id ${data.id}`);
+  //   }
   // }
 
 
