@@ -8,7 +8,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 export class UsersMicroserviceController {
   constructor(private readonly usersService: UsersService) { }
 
-  @MessagePattern({ cmd: 'createUser' })
+  @MessagePattern({ cmd: 'BLACKAPI.CREATEUSER' })
   create(@Payload() createUserDto: CreateUserDto) {
     try {
       return this.usersService.create(createUserDto);
@@ -17,10 +17,14 @@ export class UsersMicroserviceController {
     }
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.usersService.findAll();
-  // }
+  @MessagePattern({cmd: 'BLACKAPI.FINDALLUSERS'})
+  findAll() {
+    try {
+      return this.usersService.findAll();
+    } catch (err) {
+      throw new InternalServerErrorException("[BLACK-API] - Could not find users.")
+    }
+  }
 
 
   // findOne(@Param('id') id: string) {

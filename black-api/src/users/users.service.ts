@@ -12,9 +12,9 @@ export class UsersService {
     return this.usersRepository.create(createUserDto);
   }
 
-  // findAll() {
-  //   return `This action returns all users`;
-  // }
+  async findAll() {
+    return this.usersRepository.findAll();
+  }
 
   // findOne(id: number) {
   //   return `This action returns a #${id} user`;

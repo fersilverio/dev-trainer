@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Inject, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Inject, Logger, HttpException, HttpStatus, Get } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ClientProxy } from '@nestjs/microservices';
@@ -27,10 +27,10 @@ export class UsersController {
     }
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.usersService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.usersService.findAll();
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {

@@ -5,16 +5,25 @@ import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class UsersService {
-  constructor(@Inject('NATS_SERVICE') private readonly nats: ClientProxy) { }
+  constructor(
+    @Inject('NATS_SERVICE') private readonly nats: ClientProxy
+  ) { }
+  
+  private async sendMessage(command: string, data: unknown) {
+    const response = await firstValueFrom(this.nats.send({cmd: command}, data));
+    return response;
+  }
+  
   
   async create(createUserDto: CreateUserDto) {
-    const response = await firstValueFrom(this.nats.send({ cmd: 'createUser' }, createUserDto))
+    const response = this.sendMessage('BLACKAPI.CREATEUSER', createUserDto);
     return response;
   }
 
-  // findAll() {
-  //   return `This action returns all users`;
-  // }
+  async findAll() {
+    const response = this.sendMessage('BLACKAPI.FINDALLUSERS', "");
+    return response;
+  }
 
   // findOne(id: number) {
   //   return `This action returns a #${id} user`;
