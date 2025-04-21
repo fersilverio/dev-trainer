@@ -36,9 +36,8 @@ export class UsersMicroserviceController {
   }
 
   @MessagePattern({cmd: 'BLACKAPI.UPDATEUSER'})
-  update(@Payload() data: any) {
+  update(@Payload() data: {id: number, data: UpdateUserDto}) {
     try {
-      console.log(data, "black controller")
       return this.usersService.update(data);
     } catch (err) {
       throw new InternalServerErrorException(`[BLACK-API] - Could not update user with id ${data.id}`);

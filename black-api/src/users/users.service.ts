@@ -20,7 +20,7 @@ export class UsersService {
     return this.usersRepository.findOne(id);
   }
 
-  async update(data: any) {
+  async update(data: {id: number, data: UpdateUserDto}) {
     return this.usersRepository.update({...data});
   }
 
