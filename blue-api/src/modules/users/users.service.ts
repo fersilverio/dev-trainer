@@ -43,7 +43,8 @@ export class UsersService {
     return response;
   }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
+  async remove(id: number) {
+    const response = this.sendMessage('BLACKAPI.REMOVEUSER', id);
+    return response;
+  }
 }

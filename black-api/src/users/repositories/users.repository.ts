@@ -7,5 +7,5 @@ export interface UsersRepository {
     findOne(id: number): Promise<User>;
     findAll(): Promise<User[]>;
     update(data: {id: number, data: UpdateUserDto}): Promise<User>;
-    // delete(id: number): Promise<User>;
+    delete(id: number): Promise<User>;
 }

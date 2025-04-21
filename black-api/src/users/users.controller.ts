@@ -44,8 +44,8 @@ export class UsersMicroserviceController {
     }
   }
 
-
-  // remove(@Param('id') id: string) {
-  //   return this.usersService.remove(+id);
-  // }
+  @MessagePattern({cmd: 'BLACKAPI.REMOVEUSER'})
+  remove(@Payload() id: string) {
+    return this.usersService.remove(+id);
+  }
 }
