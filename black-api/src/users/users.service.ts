@@ -20,11 +20,9 @@ export class UsersService {
     return this.usersRepository.findOne(id);
   }
 
-  // async update(data: {id: number, updateUserDto: UpdateUserDto}) {
-  //   console.log("black service")
-  //   console.log(data.id, data.updateUserDto);
-  //   return this.usersRepository.update(data.id, data.updateUserDto);
-  // }
+  async update(data: any) {
+    return this.usersRepository.update({...data});
+  }
 
 
   // remove(id: number) {

@@ -31,16 +31,17 @@ export class UsersService {
     return response;
   }
 
-  // async update(id: number, updateUserDto: UpdateUserDto) {
-  //   const response = this.sendMessage(
-  //     'BLACKAPI.UPDATEUSER', 
-  //     {
-  //       id, 
-  //       data: updateUserDto
-  //     }
-  //   );
-  //   return response;
-  // }
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const dataObj = {
+      id,
+      ...updateUserDto
+    }
+    const response = this.sendMessage(
+      'BLACKAPI.UPDATEUSER', 
+      dataObj
+    );
+    return response;
+  }
 
   // remove(id: number) {
   //   return `This action removes a #${id} user`;

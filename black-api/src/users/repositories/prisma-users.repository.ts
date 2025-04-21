@@ -28,12 +28,19 @@ export class PrismaUsersRepository implements UsersRepository {
         return users;
     }
     
-    // async update(id: number, data: UpdateUserDto): Promise<User> {
-    //     console.log(data);
-
-    //     const updatedUser = await this.prisma.user.update({where: {id}, data});
-    //     return updatedUser;
-    // }
+    async update(data: any): Promise<User> {
+        const updatedUser = await this.prisma.user.update(
+            {
+                where: {
+                    id: data.id
+                }, 
+                data: {
+                    ...data,
+                }
+            }
+        );
+        return updatedUser;
+    }
 
     // delete(id: number): Promise<User> {
     //     throw new Error("Method not implemented.");
