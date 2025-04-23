@@ -1,0 +1,165 @@
+stakeholder_project_definition_task:
+  description: >
+    Provide a comprehensive explanation of the project, detailing all system requirements  
+    based on deep business knowledge. Outline the core functionalities, business rules,  
+    and key objectives that the software must fulfill. Ensure that all stakeholder needs  
+    are captured and clearly articulated to guide development.  
+    Collaborate with requirement analysts to refine and structure these needs into formal specifications.  
+    Address potential challenges, risks, and constraints that could impact the project.
+
+  expected_output: >
+    A well-documented project overview, including a detailed list of system features and business rules.  
+    A structured set of high-level requirements ready for further refinement and validation.  
+    A summary of identified risks and constraints that may affect project execution.  
+    Initial alignment between stakeholders and development teams on project scope and priorities.
+    Its important to note that the document should not contain any abbreviations, summarizations or omissions, brevity is not an option to consider.
+
+  agent: stakeholder
+
+requirement_analysis_task:
+  description: >
+    Analyze the project document provided by the stakeholder to extract, refine, and formalize software requirements.  
+    Identify and categorize functional and non-functional requirements, ensuring alignment with business needs.  
+    Utilize elicitation techniques such as interviews, document analysis, and workshops to clarify ambiguities.  
+    Model requirements using appropriate formal methods and techniques, ensuring completeness and consistency.  
+    Define acceptance criteria for each requirement to facilitate validation and implementation.
+
+  expected_output: >
+    A structured document containing functional and non-functional requirements, categorized and clearly defined.  
+    Requirement models (e.g., use case diagrams, process flows) to provide a visual representation of the system.  
+    A validated set of requirements with acceptance criteria, ensuring clarity for the development team.  
+    A list of open questions or assumptions requiring further stakeholder input.
+
+  agent: requirement_analyst
+
+feature_scoping_task:
+  description: >
+    Utilize the requirements documentation provided by the Requirements Analyst to define a structured  
+    feature scope for development. Identify and define up to five features per execution of the crew,  
+    ensuring that each feature fully addresses the documented requirements and no critical functionality  
+    is overlooked.  
+
+    Prioritize features based on business impact, user needs, and technical feasibility, ensuring alignment  
+    with the product vision and strategy. Collaborate with stakeholders, designers, and engineers to refine  
+    feature definitions, breaking them down into well-scoped deliverables. Ensure that each feature has clear  
+    objectives, dependencies, and expected outcomes to guide development.  
+
+    Define a phased rollout strategy to optimize resource allocation and time-to-market, considering technical  
+    dependencies and business priorities.  
+
+    **Important Notes:**  
+    - The system must **not** return abbreviations, simplified descriptions, or shortened versions of any content.  
+      Every feature must be documented in full detail without omissions or reductions for the sake of brevity.  
+    - For each feature, the number of tasks must be **sufficient to fully implement the feature in its entirety**,  
+      ensuring that all necessary development efforts are accounted for. No feature should be left incomplete  
+      due to an insufficient number of tasks.  
+    - The system must generate **five fully detailed and formatted features per execution**.  
+    - The system must **not** summarize, omit, or indicate that subsequent features follow the same format.  
+      Each feature must be written **completely and explicitly** in its entirety.
+
+  expected_output: >
+    A comprehensive feature document outlining up to five features required to fulfill the requirements  
+    provided by the Requirements Analyst. The document must follow the structure below:  
+
+    **Feature Document Structure:**  
+
+    **Feature [Feature Name]**  
+      - **Business Value:** A detailed explanation of how the feature contributes to business goals.  
+      - **User Impact:** A full description of the specific benefits this feature brings to end users.  
+      - **Dependencies:** A complete list of technical, operational, or external factors affecting implementation.  
+      - **Constraints:** A thorough explanation of limitations or restrictions influencing the feature scope.  
+      - **Expected Outcomes:** Clearly defined and measurable success criteria for the feature.  
+      - **Tasks:** A detailed breakdown of development tasks required to fully implement the feature.  
+        Each feature must have as many tasks as necessary to ensure that no aspect is left unaddressed.  
+
+    It is mandatory that the document contains one to five generated features and it needs to be fully documented it means:
+     - No abbreviations, summarizations or omissions  
+
+    The document must serve as the foundation for technical planning, guiding the breakdown of development tasks  
+    by the Tech Leads and ensuring clarity across all stakeholders.
+
+  agent: product_manager
+
+backend_task_creation:
+  description: >
+    Analyze each feature outlined in the Product Manager's document and break them down into structured backend development tasks.  
+    Each task must align with the functional and non-functional requirements captured by the Requirements Analyst.  
+    Collaborate with the backend team to ensure technical feasibility, define API contracts, database structures,  
+    security considerations, and performance optimizations.  
+
+    The tasks must be well-defined and documented in a structured format to ensure clarity for developers.  
+    The resulting document will serve as a blueprint for backend implementation, ensuring alignment  
+    with business goals and system architecture.
+
+  expected_output: >
+    A comprehensive document detailing backend tasks for each feature, structured as follows:  
+
+    Feature A  
+      - **Task 1:**  
+        - **Deliverable Explanation:** Summarized based on insights from the Requirements Analyst and Product Manager.  
+        - **Technical Backend Description:** API specifications, database schema modifications, security requirements, performance optimizations, and other technical considerations.  
+      - **Task 2:**  
+        - **Deliverable Explanation:** Context and purpose of the feature implementation.  
+        - **Technical Backend Description:** Necessary backend changes, architectural decisions, and integration points.  
+      - ...  
+      - **Task N:**  
+        - **Deliverable Explanation:** Comprehensive overview of expected outcome.  
+        - **Technical Backend Description:** Specific backend implementation details.  
+
+    Feature B  
+      - **Task 1:**  
+      - **Task 2:**  
+      - ...  
+      - **Task N:**  
+
+    The document must be structured for easy reference by the backend team, ensuring seamless development and alignment with frontend integration.
+
+    **Important Note:**  
+    - The system must **not** return abbreviations, simplified descriptions, or shortened versions of any content.  
+      Every feature must be documented in full detail without omissions or reductions for the sake of brevity.
+
+  agent: tech_lead
+
+frontend_task_creation:
+  description: >
+    Analyze each feature outlined in the Product Manager's document and break them down into structured frontend development tasks.  
+    Each task must align with the functional and non-functional requirements captured by the Requirements Analyst.  
+    Collaborate with the frontend team to ensure technical feasibility, UI/UX alignment, state management,  
+    accessibility, and performance optimizations.  
+
+    The tasks must complement the existing backend task document, ensuring seamless integration between frontend and backend efforts.  
+    Instead of creating a separate document, frontend tasks will be appended to the backend task document,  
+    ensuring a unified source of truth for development.
+
+  expected_output: >
+    A comprehensive document detailing frontend tasks for each feature, structured as follows:  
+
+    Feature A  
+      - **Task 1:**  
+        - **Deliverable Explanation:** Summarized based on insights from the Requirements Analyst and Product Manager.  
+        - **Technical Backend Description:** Previously defined backend logic, API endpoints, database interactions.  
+        - **Technical Frontend Description:** UI component breakdown, state management approach, API integrations,  
+          performance optimizations, and accessibility considerations.  
+      - **Task 2:**  
+        - **Deliverable Explanation:** Context and purpose of the feature implementation.  
+        - **Technical Frontend Description:** Component structure, data flow, styling requirements, animations,  
+          and framework-specific best practices.  
+      - ...  
+      - **Task N:**  
+        - **Deliverable Explanation:** Comprehensive overview of expected outcome.  
+        - **Technical Frontend Description:** Specific frontend implementation details.  
+
+    Feature B  
+      - **Task 1:**  
+      - **Task 2:**  
+      - ...  
+      - **Task N:**  
+
+    The document must be structured to ensure smooth coordination between frontend and backend teams,  
+    enabling efficient development and integration.
+
+    **Important Note:**  
+    - The system must **not** return abbreviations, simplified descriptions, or shortened versions of any content.  
+      Every feature must be documented in full detail without omissions or reductions for the sake of brevity.
+
+  agent: tech_lead
