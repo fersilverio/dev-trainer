@@ -14,6 +14,17 @@ services:
     build: ./black-api
     volumes:
       - ./black-api/src:/usr/src/app/src
+    depends_on:
+      - black_db
+  white_api:
+    build: ./white-api
+    env_file:
+      - ./white-api/.env
+    environment:
+      - NATS_URL=nats://nats:4222
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - nats
   nats:
     image: nats
     ports:
