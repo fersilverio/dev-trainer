@@ -1,3 +1,8 @@
+import asyncio
+import json
+
+from nats.aio.client import Client as NATS
+from nats_client import NatsClient
 from crew import TechTeam
 
 
@@ -17,4 +22,19 @@ def run():
         raise Exception(f"An error occurred while running the crew: {e}")
 	
 
-a = run()
+async def main():
+    nats = NatsClient()
+    await nats.connect()
+
+    async def handler(msg):
+        result = run()
+        await msg.respond(nats.encode(result))
+    
+    await nats.subscribe("tech.team.kickoff", cb=handler)
+    print("Python service listening on 'tech.team.kickoff'...")
+
+    # Keep the service running
+    while True:
+        await asyncio.sleep(1)
+
+asyncio.run(main())
