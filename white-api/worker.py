@@ -30,7 +30,7 @@ async def main():
         result = run()
         await msg.respond(nats.encode(result))
     
-    await nats.subscribe("tech.team.kickoff", cb=handler)
+    await nats.subscribe("tech.team.kickoff", handler)
     print("Python service listening on 'tech.team.kickoff'...")
 
     # Keep the service running
