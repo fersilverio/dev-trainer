@@ -1,6 +1,46 @@
-version: "3.8"
+#version: "3.9" # necessário para supports `depends_on.condition`
 
 services:
+  black_db:
+    image: mysql:8.0
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: docker
+      MYSQL_DATABASE: black_db
+      MYSQL_USER: black
+      MYSQL_PASSWORD: docker
+    volumes:
+      - black_db_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "black",
+          "-pdocker",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  black_api:
+    build: ./black-api
+    volumes:
+      - ./black-api/src:/usr/src/app/src
+    depends_on:
+      black_db:
+        condition: service_healthy
+    env_file:
+      - ./black-api/.env
+    command: sh -c "npx prisma generate && npm run start:dev"
+
   blue_api:
     build: ./blue-api
     ports:
@@ -10,12 +50,7 @@ services:
     command: npm run start:dev
     environment:
       - PORT=3000
-  black_api:
-    build: ./black-api
-    volumes:
-      - ./black-api/src:/usr/src/app/src
-    depends_on:
-      - black_db
+
   white_api:
     build: ./white-api
     env_file:
@@ -25,17 +60,11 @@ services:
       - PYTHONUNBUFFERED=1
     depends_on:
       - nats
+
   nats:
     image: nats
     ports:
-      - 4222:4222
-  black_db:
-    image: mysql
-    restart: always
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: docker
-      MYSQL_DATABASE: black_db
-      MYSQL_USER: black
-      MYSQL_PASSWORD: docker
+      - "4222:4222"
+
+volumes:
+  black_db_data:
