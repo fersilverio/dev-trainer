@@ -9,6 +9,6 @@ export class CrewTechTeamController {
 
     @Get('run')
     async runTechTeam() {
-        //return await this.crewService.run()
+        return await this.crewService.run({})
     }
 }

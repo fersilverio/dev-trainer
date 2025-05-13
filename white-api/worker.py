@@ -27,6 +27,7 @@ async def main():
     await nats.connect()
 
     async def handler(msg):
+        print("Cheguei aqui no handler do white api entrada")
         result = run()
         await msg.respond(nats.encode(result))
     

@@ -8,8 +8,9 @@ export class CrewTechTeamService {
         @Inject('NATS_SERVICE') private readonly nats: ClientProxy
     ) { }
 
-    async run(command: string, data: unknown) {
-        const response = await firstValueFrom(this.nats.send({ cmd: command }, data));
+    async run(data: unknown) {
+        console.log("cheguei aqui")
+        const response = await firstValueFrom(this.nats.send("tech.team.kickoff", data));
         return response;
     }
 }
