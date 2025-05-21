@@ -1,4 +1,4 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, InternalServerErrorException } from "@nestjs/common";
 import { CrewTechTeamService } from "./crew-tech-team.service";
 
 @Controller('tech-team')
@@ -9,6 +9,10 @@ export class CrewTechTeamController {
 
     @Get('run')
     async runTechTeam() {
-        return await this.crewService.run({})
+        try {
+            return await this.crewService.run({})
+        } catch (error) {
+            throw new InternalServerErrorException("Deu ruim com a crew")
+        }
     }
 }
