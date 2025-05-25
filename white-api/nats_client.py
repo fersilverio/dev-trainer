@@ -2,163 +2,145 @@ import logging
 import json
 
 from nats.aio.client import Client as NATS
-from nats.aio.errors import ErrNoServers, ErrTimeout, ErrConnectionClosed
+from nats.aio.errors import ErrTimeout, ErrConnectionClosed
 
-# Configuração de logging mínima para ver o que está acontecendo.
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - NATS_CLIENT - %(levelname)s - %(message)s')
 
 class NatsClient:
     def __init__(self, servers=None):
         self.nc = NATS()
-        self.servers = servers or ['nats://nats:4222']
+        #self.servers = servers or ['nats://nats:4222']
+        self.servers = servers or ['nats://localhost:4222']
 
     async def connect(self):
         if self.nc.is_connected:
-            logging.info(f"Já está conectado ao NATS em {self.nc.connected_url.netloc}.")
+            logging.info(f"NATS connected at {self.nc.connected_url.netloc}.")
             return
 
-        logging.info(f"Tentando conectar ao NATS em {self.servers}...")
+        logging.info(f"Trying to connect NATS at {self.servers}...")
+        
         try:
-            # A chamada `await self.nc.connect()` tentará se conectar.
-            # A biblioteca tem reconexão automática por padrão.
-            # Se esta chamada falhar na conexão inicial, ela levantará uma exceção.
             await self.nc.connect(servers=self.servers)
-            logging.info(f"Conectado com sucesso ao NATS! Servidor conectado: {self.nc.connected_url.netloc}")
+            logging.info(f"Successfully connect to NATS! Server connected: {self.nc.connected_url.netloc}")
         except Exception as e:
-            # Captura qualquer exceção durante a tentativa de conexão para logar
-            # e depois re-levanta para que o chamador possa tratar.
-            logging.error(f"Falha ao conectar ao NATS: {e}")
-            raise # Importante: Re-levantar a exceção para o chamador.
+            logging.error(f"Connection failed to NATS: {e}")
+            raise
     
     
     @property
     def is_connected(self) -> bool:
-        """Retorna True se o cliente NATS estiver conectado, False caso contrário."""
+        # return true if client connected false otherwise
         return self.nc.is_connected
     
-
-
-    # --- Novos métodos para Request/Reply ---
-
-    async def request(self, subject: str, payload: dict, timeout: float = 5.0):
-        """
-        Envia uma mensagem para um 'subject' e aguarda uma resposta (request-reply).
-        Esta é a função para QUANDO ESTA API (white_api) QUER FAZER UMA PERGUNTA.
+    
+    
+    """
+       Send message to a 'subject' and wait for response (request-reply).
 
         Args:
-            subject (str): O 'subject' (tópico) para o qual enviar a requisição.
-            payload (dict): Os dados a serem enviados (serão convertidos para JSON).
-            timeout (float, optional): Tempo em segundos para aguardar uma resposta. Padrão: 5.0.
+            subject (str): O 'subject' (topic) to send request.
+            payload (dict): data to be sent (JSON parsed).
+            timeout (float, optional): Time in seconds for delay. Default: 5.0.
 
         Returns:
-            dict: A resposta recebida (convertida de JSON para dict).
+            dict: The given response (JSON to dict converted).
 
         Raises:
-            ConnectionError: Se o cliente não estiver conectado.
-            nats.aio.errors.ErrTimeout: Se a resposta não for recebida dentro do tempo limite.
-            json.JSONDecodeError: Se a resposta recebida não for um JSON válido.
-            Exception: Outras exceções da biblioteca NATS ou de conexão.
-        """
+            ConnectionError: If client is not connected.
+            nats.aio.errors.ErrTimeout: If takes too long to respond.
+            json.JSONDecodeError: If response is not a valid JSON.
+            Exception: Other exceptions.
+    """
+    
+    async def request(self, subject: str, payload: dict, timeout: float = 5.0):
+        
         if not self.is_connected:
-            logging.error("Não conectado ao NATS. Não é possível enviar a requisição.")
-            raise ConnectionError("Cliente NATS não está conectado.") # Ou uma exceção customizada
+            logging.error("NATS not connected. Unable to send request.")
+            raise ConnectionError("NATS client not connected.")
 
-        logging.debug(f"Enviando requisição para '{subject}' com payload: {payload} (timeout: {timeout}s)")
+        logging.debug(f"Sending request to '{subject}' with payload: {payload} (timeout: {timeout}s)")
+
         try:
             data_to_send = json.dumps(payload).encode('utf-8')
-            # self.nc.request envia a mensagem e espera uma resposta no 'inbox' temporário que ele cria.
             response_msg = await self.nc.request(subject, data_to_send, timeout=timeout)
-            logging.debug(f"Resposta recebida de '{subject}': {response_msg.data.decode('utf-8')[:100]}...") # Loga apenas parte da resposta
             
-            # Decodifica a resposta de JSON para dict
+            logging.debug(f"Response received from '{subject}': {response_msg.data.decode('utf-8')[:100]}...")
+            
             response_payload = json.loads(response_msg.data.decode('utf-8'))
+            
             return response_payload
+        
         except ErrTimeout:
-            logging.warning(f"Timeout ({timeout}s) ao aguardar resposta de '{subject}'.")
-            raise # Re-levanta ErrTimeout para o chamador tratar
+            logging.warning(f"Timeout ({timeout}s) waiting for '{subject}' response.")
+            raise
         except json.JSONDecodeError as e:
-            # Se a resposta não for um JSON válido
-            logging.error(f"Erro ao decodificar resposta JSON de '{subject}': {e}. Dados recebidos: {response_msg.data.decode('utf-8') if 'response_msg' in locals() else 'N/A'}")
+            logging.error(f"Error decoding JSON response from '{subject}': {e}. Received data: {response_msg.data.decode('utf-8') if 'response_msg' in locals() else 'N/A'}")
             raise
         except ErrConnectionClosed:
-            logging.error(f"Conexão com NATS fechada ao tentar fazer request para '{subject}'.")
+            logging.error(f"NATS connection closed when trying to make a request to '{subject}'.")
             raise
         except Exception as e:
-            logging.error(f"Erro inesperado ao enviar requisição para '{subject}': {e}")
+            logging.error(f"Unexpected error sending request to '{subject}': {e}")
             raise
 
     async def subscribe(self, subject: str, user_request_handler: callable):
         """
-        Subscreve a um 'subject' para receber mensagens de requisição e respondê-las.
-        Esta é a função para QUANDO ESTA API (white_api) PRECISA RESPONDER A PERGUNTAS.
-
+        Subscribe to a'subject' to receive requests and repl them.
+        
         Args:
-            subject (str): O 'subject' (tópico) no qual escutar por requisições.
-            user_request_handler (callable): Uma função assíncrona (async def) que será chamada
-                                             com os dados da requisição (dict).
-                                             Esta função DEVE retornar um dict que será o payload da resposta.
-                                             Exemplo: async def meu_handler(dados_requisicao: dict) -> dict:
-                                                         # processa dados_requisicao
-                                                         return {"resultado": "processado"}
-
-        Returns:
-            nats.aio.client.Subscription: O objeto de subscrição, que pode ser usado para `unsubscribe`.
-
+            subject (str): The 'subject' that will listen requests.
+            user_request_handler (callable): Async function (async def) that will be called
+                                             with request data (dict).
+                                             Should return a dict that will be response payload.
         Raises:
-            ConnectionError: Se o cliente não estiver conectado.
-            Exception: Outras exceções da biblioteca NATS durante a subscrição.
+            ConnectionError: If client is not connected.
+            Exception: Other exceptions.
         """
         if not self.is_connected:
-            logging.error(f"Não conectado ao NATS. Não é possível subscrever ao subject '{subject}'.")
-            raise ConnectionError("Cliente NATS não está conectado.")
+            logging.error(f"Not connected to NATS. Cannot subscribe to subject '{subject}'.")
+            raise ConnectionError("NATS client is not connected.")
 
         async def internal_handler_wrapper(msg):
-            logging.debug(f"Mensagem de requisição recebida em '{msg.subject}' (reply_to: '{msg.reply}')")
+            logging.debug(f"Request message received on '{msg.subject}' (reply_to: '{msg.reply}')")
             
-            if not msg.reply: # Se não houver um 'reply subject', não é uma requisição que espera resposta.
-                logging.warning(f"Mensagem recebida em '{msg.subject}' sem 'reply subject'. Ignorando para fins de request/reply.")
+            if not msg.reply:
+                logging.warning(f"Message received on '{msg.subject}' without 'reply subject'. Ignoring for request/reply purposes.")
                 return
 
             try:
-                # Decodifica os dados da mensagem de JSON para dict
                 request_data = json.loads(msg.data.decode('utf-8'))
             except json.JSONDecodeError:
-                logging.error(f"Erro ao decodificar JSON da requisição em '{msg.subject}'. Payload: {msg.data.decode('utf-8')[:100]}...")
-                # Envia uma resposta de erro
-                error_response_payload = {"error": "Payload da requisição inválido (não é JSON)."}
+                logging.error(f"Error decoding JSON from request on '{msg.subject}'. Payload: {msg.data.decode('utf-8')[:100]}...")
+                error_response_payload = {"error": "Invalid request payload (not JSON)."}
                 await self.nc.publish(msg.reply, json.dumps(error_response_payload).encode('utf-8'))
                 return
 
             try:
-                # Chama o handler fornecido pelo usuário com os dados da requisição
-                response_payload_from_handler = await user_request_handler(request_data)
+                response_payload_from_handler = user_request_handler(request_data)
 
-                # O handler do usuário DEVE retornar um dicionário para ser a resposta.
                 if isinstance(response_payload_from_handler, dict):
                     response_data_encoded = json.dumps(response_payload_from_handler).encode('utf-8')
                     await self.nc.publish(msg.reply, response_data_encoded)
-                    logging.debug(f"Resposta enviada para '{msg.reply}' com payload: {response_payload_from_handler}")
+                    logging.debug(f"Response sent to '{msg.reply}' with payload: {response_payload_from_handler}")
                 else:
-                    logging.error(f"O 'user_request_handler' para '{msg.subject}' não retornou um dict. Retornou: {type(response_payload_from_handler)}. Nenhuma resposta enviada.")
+                    logging.error(f"The 'user_request_handler' for '{msg.subject}' did not return a dict. Returned: {type(response_payload_from_handler)}. No response sent.")
                     
-                    error_response_payload = {"error": "Erro interno do servidor ao processar a requisição (handler não retornou dict)."}
+                    error_response_payload = {"error": "Internal server error while processing the request (handler did not return dict)."}
                     await self.nc.publish(msg.reply, json.dumps(error_response_payload).encode('utf-8'))
 
             except Exception as e:
-                logging.error(f"Erro ao executar o 'user_request_handler' para o subject '{msg.subject}': {e}", exc_info=True)
-                # Envia uma resposta de erro para o requisitante
-                error_response_payload = {"error": "Erro interno do servidor ao processar a requisição.", "details": str(e)}
+                logging.error(f"Error executing 'user_request_handler' for subject '{msg.subject}': {e}", exc_info=True)
+                error_response_payload = {"error": "Internal server error while processing the request.", "details": str(e), "status": 500}
                 try:
                     await self.nc.publish(msg.reply, json.dumps(error_response_payload).encode('utf-8'))
                 except Exception as pub_err:
-                    logging.error(f"Falha adicional ao tentar enviar resposta de erro para '{msg.reply}': {pub_err}")
+                    logging.error(f"Additional failure when trying to send error response to '{msg.reply}': {pub_err}")
 
-        logging.info(f"Subscrevendo ao subject '{subject}' para responder a requisições.")
+        logging.info(f"Subscribing to subject '{subject}' to respond to requests.")
         try:
-            # self.nc.subscribe registra o wrapper para ser chamado para cada mensagem no subject.
             subscription = await self.nc.subscribe(subject, cb=internal_handler_wrapper)
-            return subscription # Retorna o objeto de subscrição
+            return subscription
         except Exception as e:
-            logging.error(f"Erro ao tentar subscrever (para replies) ao subject '{subject}': {e}")
+            logging.error(f"Error trying to subscribe (for replies) to subject '{subject}': {e}")
             raise
 

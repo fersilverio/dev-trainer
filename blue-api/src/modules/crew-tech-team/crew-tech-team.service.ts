@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { firstValueFrom } from "rxjs";
 
@@ -9,8 +9,11 @@ export class CrewTechTeamService {
     ) { }
 
     async run(data: unknown) {
-        console.log("cheguei aqui")
         const response = await firstValueFrom(this.nats.send("tech.team.kickoff", data));
+
+        if (response.status !== 200) {
+            throw new InternalServerErrorException(response.error, { cause: response.details })
+        }
         return response;
     }
 }
