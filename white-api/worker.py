@@ -37,26 +37,22 @@ def white_api_kickoff_handler (nats_payload: dict) -> dict:
     
     try:
         result = TechTeam().crew().kickoff(inputs=inputs)
+        return result.json_dict
 
-        return result
-
-    except ValueError as ve: # Captures validation errors from your business logic
+    except ValueError as ve:
         logging.error(f"[WORKER - Handler] Validation error in TechTeam logic: {ve}")
         return {
             "error": "Failed to validate inputs for TechTeam",
             "details": str(ve),
-            "suggested_status_code": 400 # Bad Request
+            "suggested_status_code": 400
         }
     except Exception as e:
-        # This is where your original `run()` function would do:
-        # raise Exception(f"An error occurred while running the crew: {e}")
-        # As `user_request_handler` must return a dict, we format the error here.
         original_error_message = f"An error occurred while running the crew: {e}"
         logging.error(f"[WORKER - Handler] Exception in business logic: {original_error_message}")
         return {
             "error": "Error executing TechTeam kickoff",
-            "details": original_error_message, # Keeps the original error message
-            "status": 500 # Internal Server Error
+            "details": original_error_message,
+            "status": 500
         }
 
     
@@ -82,7 +78,7 @@ async def main():
         finally:
             if nats.is_connected:
                 logging.info("[WORKER - Main] Closing NATS connection...")
-                await nats.nc.drain() # Or a nats.close() method if you add one
+                await nats.nc.drain()
             logging.info("[WORKER - Main] Worker finished.")
     else:
         logging.info("[WORKER - Main] Could not connect to NATS. Worker not started.")

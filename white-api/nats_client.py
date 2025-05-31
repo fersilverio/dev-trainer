@@ -1,16 +1,19 @@
 import logging
 import json
+import os
 
 from nats.aio.client import Client as NATS
 from nats.aio.errors import ErrTimeout, ErrConnectionClosed
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - NATS_CLIENT - %(levelname)s - %(message)s')
 
 class NatsClient:
     def __init__(self, servers=None):
         self.nc = NATS()
-        #self.servers = servers or ['nats://nats:4222']
-        self.servers = servers or ['nats://localhost:4222']
+        self.servers = servers or [os.getenv("NATS_URL")]
 
     async def connect(self):
         if self.nc.is_connected:
@@ -118,8 +121,10 @@ class NatsClient:
             try:
                 response_payload_from_handler = user_request_handler(request_data)
 
-                if isinstance(response_payload_from_handler, dict):
+                if type(response_payload_from_handler) == dict:
+                    response_payload_from_handler.update( { "status" : 200 } )
                     response_data_encoded = json.dumps(response_payload_from_handler).encode('utf-8')
+                    
                     await self.nc.publish(msg.reply, response_data_encoded)
                     logging.debug(f"Response sent to '{msg.reply}' with payload: {response_payload_from_handler}")
                 else:

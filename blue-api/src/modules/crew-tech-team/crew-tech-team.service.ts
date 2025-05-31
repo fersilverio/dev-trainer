@@ -8,12 +8,12 @@ export class CrewTechTeamService {
         @Inject('NATS_SERVICE') private readonly nats: ClientProxy
     ) { }
 
-    async run(data: unknown) {
+    async run(data: unknown): Promise<{ features: Array<any> }> {
         const response = await firstValueFrom(this.nats.send("tech.team.kickoff", data));
 
         if (response.status !== 200) {
             throw new InternalServerErrorException(response.error, { cause: response.details })
         }
-        return response;
+        return response.features;
     }
 }
