@@ -1,6 +1,7 @@
 import { Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { firstValueFrom } from "rxjs";
+import { FeatureSet } from "./crew-tech-team.types";
 
 @Injectable()
 export class CrewTechTeamService {
@@ -8,7 +9,7 @@ export class CrewTechTeamService {
         @Inject('NATS_SERVICE') private readonly nats: ClientProxy
     ) { }
 
-    async run(data: unknown): Promise<{ features: Array<any> }> {
+    async run(data: unknown): Promise<FeatureSet> {
         const response = await firstValueFrom(this.nats.send("tech.team.kickoff", data));
 
         if (response.status !== 200) {
