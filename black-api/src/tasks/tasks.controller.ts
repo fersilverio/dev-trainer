@@ -1,7 +1,7 @@
 import { Controller, HttpStatus, Logger } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { FeatureSet } from './tasks.types';
+import { Feature, FeatureSet } from './tasks.types';
 
 @Controller()
 export class TasksMicroserviceController {
@@ -10,7 +10,7 @@ export class TasksMicroserviceController {
   constructor(private readonly tasksService: TasksService) { }
 
   @MessagePattern({ cmd: 'BLACKAPI.SAVE.TASK.STRUCTURE' })
-  async saveTaskStructure(@Payload() featureSet: FeatureSet) {
+  async saveTaskStructure(@Payload() featureSet: Feature[]) {
     try {
       await this.tasksService.save(featureSet);
       return { status: HttpStatus.CREATED, message: 'Task structure saved successfully.' };
