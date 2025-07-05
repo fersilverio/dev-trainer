@@ -20,10 +20,9 @@ export class UsersService {
     return this.usersRepository.findOne(id);
   }
 
-  async update(data: {id: number, data: UpdateUserDto}) {
-    return this.usersRepository.update({...data});
+  async update(data: { id: number, data: UpdateUserDto }) {
+    return this.usersRepository.update({ ...data });
   }
-
 
   async remove(id: number) {
     return this.usersRepository.delete(id);

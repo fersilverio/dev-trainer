@@ -4,7 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
-@Controller('users')
+@Controller()
 export class UsersMicroserviceController {
   constructor(private readonly usersService: UsersService) { }
 
@@ -17,7 +17,7 @@ export class UsersMicroserviceController {
     }
   }
 
-  @MessagePattern({cmd: 'BLACKAPI.FINDALLUSERS'})
+  @MessagePattern({ cmd: 'BLACKAPI.FINDALLUSERS' })
   findAll() {
     try {
       return this.usersService.findAll();
@@ -26,7 +26,7 @@ export class UsersMicroserviceController {
     }
   }
 
-  @MessagePattern({cmd: 'BLACKAPI.FINDONEUSER'})
+  @MessagePattern({ cmd: 'BLACKAPI.FINDONEUSER' })
   findOne(@Payload() id: number) {
     try {
       return this.usersService.findOne(id);
@@ -35,8 +35,8 @@ export class UsersMicroserviceController {
     }
   }
 
-  @MessagePattern({cmd: 'BLACKAPI.UPDATEUSER'})
-  update(@Payload() data: {id: number, data: UpdateUserDto}) {
+  @MessagePattern({ cmd: 'BLACKAPI.UPDATEUSER' })
+  update(@Payload() data: { id: number, data: UpdateUserDto }) {
     try {
       return this.usersService.update(data);
     } catch (err) {
@@ -44,7 +44,7 @@ export class UsersMicroserviceController {
     }
   }
 
-  @MessagePattern({cmd: 'BLACKAPI.REMOVEUSER'})
+  @MessagePattern({ cmd: 'BLACKAPI.REMOVEUSER' })
   remove(@Payload() id: string) {
     return this.usersService.remove(+id);
   }

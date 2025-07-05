@@ -163,3 +163,38 @@ frontend_task_creation:
       Every feature must be documented in full detail without omissions or reductions for the sake of brevity.
 
   agent: tech_lead
+
+tasks_priorization_deadline_definitions:
+  description: >
+    Analyze the backend and frontend task documents to prioritize tasks based on business value,  
+    technical dependencies, and resource availability. Define deadlines for each task, ensuring alignment  
+    with project milestones and stakeholder expectations. Collaborate with the Tech Leads to ensure  
+    that prioritization reflects both business needs and technical feasibility.  
+
+    The resulting document will serve as a prioritized task list with clear deadlines, guiding development efforts  
+    and ensuring timely delivery of features.
+
+  expected_output: >
+    A structured document containing prioritized tasks with deadlines, organized as follows:  
+
+    **Feature A**  
+      - **Task 1:**  
+        - **Priority Level:** 1/2/3 (1 being highest priority)  
+        - **Deadline:** Specific date  
+      - **Task 2:**  
+        - **Priority Level:** 1/2/3 (1 being highest priority)  
+        - **Deadline:** Specific date  
+      - ...  
+      - **Task N:**  
+        - **Priority Level:** 1/2/3 (1 being highest priority)  
+        - **Deadline:** Specific date  
+
+    **Feature B**  
+      - **Task 1:**  
+      - **Task 2:**  
+      - ...  
+      - **Task N:**  
+
+    The document must ensure clarity in task prioritization and deadlines, facilitating effective project management.
+
+  agent: product_manager

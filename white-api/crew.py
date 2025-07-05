@@ -8,9 +8,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
 class FeatureTask(BaseModel):
 	title: str
+	priotity: int
+	deadline: str
 	deliverable_explanation: str
 	technical_backend_description: str
 	technical_frontend_description: str
@@ -33,7 +34,6 @@ class TechTeam():
 	agents_config = 'config/agents.yaml'
 	tasks_config = 'config/tasks.yaml'
 
- 
 	@agent
 	def stakeholder(self) -> Agent: 
 		return Agent(
@@ -100,8 +100,15 @@ class TechTeam():
 		return Task(
 			config=self.tasks_config['frontend_task_creation'],
 			llm=llm,
-			output_json=FeatureSet
 	)
+
+	@task
+	def tasks_priorization(self) -> Task:
+		return Task(
+			config=self.tasks_config['tasks_priorization_deadline_definitions'],
+			llm=llm,
+			output_json=FeatureSet
+		)
 
 	@crew
 	def crew(self) -> Crew:

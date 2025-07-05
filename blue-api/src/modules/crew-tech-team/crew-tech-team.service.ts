@@ -5,16 +5,28 @@ import { FeatureSet } from "./crew-tech-team.types";
 
 @Injectable()
 export class CrewTechTeamService {
-    constructor(
-        @Inject('NATS_SERVICE') private readonly nats: ClientProxy
-    ) { }
+	constructor(
+		@Inject('NATS_SERVICE') private readonly nats: ClientProxy
+	) { }
 
-    async run(data: unknown): Promise<FeatureSet> {
-        const response = await firstValueFrom(this.nats.send("tech.team.kickoff", data));
+	async run(data: unknown): Promise<FeatureSet> {
+		const response = await firstValueFrom(this.nats.send("tech.team.kickoff", data));
 
-        if (response.status !== 200) {
-            throw new InternalServerErrorException(response.error, { cause: response.details })
-        }
-        return response.features;
-    }
+		if (response.status !== 200) {
+			throw new InternalServerErrorException(response.error, { cause: response.details })
+		}
+
+		await this.persistAtBlackApi(response.features);
+
+		return response.features;
+	}
+
+	private async persistAtBlackApi(features: FeatureSet) {
+		const response = await firstValueFrom(this.nats.send({ cmd: "BLACKAPI.SAVE.TASK.STRUCTURE" }, features));
+
+		if (response.status !== 201) {
+			throw new InternalServerErrorException(response.error, { cause: response.details });
+		}
+		return response;
+	}
 }
