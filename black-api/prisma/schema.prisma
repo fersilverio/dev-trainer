@@ -86,7 +86,7 @@ model KanbanColumn {
   project     Project       @relation(fields: [projectId], references: [id])
   KanbanBoard KanbanBoard[]
 
-  @@map("kanban_columns")
+  @@map("kanbanColumns")
 }
 
 model KanbanBoard {
@@ -100,6 +100,8 @@ model KanbanBoard {
   project      Project      @relation(fields: [projectId], references: [id])
   task         Task         @relation(fields: [taskId], references: [id])
   kanbanColumn KanbanColumn @relation(fields: [columnId], references: [id])
+
+  @@map("kanbanBoards")
 }
 
 model UserProject {
@@ -111,7 +113,7 @@ model UserProject {
   user    User    @relation(fields: [userId], references: [id])
   project Project @relation(fields: [projectId], references: [id])
 
-  @@map("user_projects")
+  @@map("userProjects")
 }
 
 model UserTask {
@@ -123,7 +125,7 @@ model UserTask {
   user User @relation(fields: [userId], references: [id])
   task Task @relation(fields: [taskId], references: [id])
 
-  @@map("user_tasks")
+  @@map("userTasks")
 }
 
 model TaskProject {
@@ -135,5 +137,5 @@ model TaskProject {
   task    Task    @relation(fields: [taskId], references: [id])
   project Project @relation(fields: [projectId], references: [id])
 
-  @@map("task_projects")
+  @@map("taskProjects")
 }
