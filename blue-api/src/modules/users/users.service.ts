@@ -9,13 +9,12 @@ export class UsersService {
   constructor(
     @Inject('NATS_SERVICE') private readonly nats: ClientProxy
   ) { }
-  
+
   private async sendMessage(command: string, data: unknown) {
-    const response = await firstValueFrom(this.nats.send({cmd: command}, data));
+    const response = await firstValueFrom(this.nats.send({ cmd: command }, data));
     return response;
   }
-  
-  
+
   async create(createUserDto: CreateUserDto) {
     const response = this.sendMessage('BLACKAPI.CREATEUSER', createUserDto);
     return response;
@@ -37,7 +36,7 @@ export class UsersService {
       ...updateUserDto
     }
     const response = this.sendMessage(
-      'BLACKAPI.UPDATEUSER', 
+      'BLACKAPI.UPDATEUSER',
       dataObj
     );
     return response;
