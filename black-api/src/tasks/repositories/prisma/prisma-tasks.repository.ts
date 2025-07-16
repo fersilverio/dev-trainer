@@ -7,15 +7,22 @@ import { BadRequestException } from "@nestjs/common";
 export class PrismaTasksRepository implements TasksRepository {
     constructor(private readonly prisma: PrismaService) { }
 
-    async getProjectColumnDefinitions(): Promise<KanbanBoardRegistry[]> {
+    async getProjectColumnDefinitions(): Promise<KanbanBoardRegistry[] | any> {
 
         const columnDefinitions = await this.prisma.kanbanBoard.findMany({
             where: { projectId: 2 }, // projectId is static for now
             include: {
                 kanbanColumn: true,
                 task: true
-            }
+            },
         });
+
+
+
+
+        // precisa de um preparo pra enviar pro front
+        // tem que retornar por coluna ai para cada coluna vai ser 
+        // o id, o nome e os cards, os cards vao ser os kanbanboardregistry
 
         return columnDefinitions;
     }
