@@ -26,7 +26,7 @@ export class PrismaTasksRepository implements TasksRepository {
     async saveKanbanColumn(data: CreateKanbanColumnDto) {
 
         const currentLastColumnPosition = await this.prisma.kanbanColumn.count({
-            where: { projectId: data.projectId } // projectId is static for now
+            where: { projectId: data.projectId }
         });
 
         await this.prisma.kanbanColumn.create({

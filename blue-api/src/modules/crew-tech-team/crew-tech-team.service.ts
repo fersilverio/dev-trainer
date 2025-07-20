@@ -1,16 +1,15 @@
-import { Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
-import { ClientProxy } from "@nestjs/microservices";
-import { firstValueFrom } from "rxjs";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { FeatureSet } from "./crew-tech-team.types";
+import { NatsService } from "src/infrastructure/nats-client/nats.service";
 
 @Injectable()
 export class CrewTechTeamService {
 	constructor(
-		@Inject('NATS_SERVICE') private readonly nats: ClientProxy
+		private readonly natsService: NatsService,
 	) { }
 
 	async run(data: unknown): Promise<FeatureSet> {
-		const response = await firstValueFrom(this.nats.send("tech.team.kickoff", data));
+		const response = await this.natsService.sendMessage("tech.team.kickoff", data);
 
 		if (response.status !== 200) {
 			throw new InternalServerErrorException(response.error, { cause: response.details })
@@ -22,7 +21,7 @@ export class CrewTechTeamService {
 	}
 
 	private async persistAtBlackApi(features: FeatureSet) {
-		const response = await firstValueFrom(this.nats.send({ cmd: "BLACKAPI.SAVE.TASK.STRUCTURE" }, features));
+		const response = await this.natsService.sendMessage('BLACKAPI.SAVE.TASK.STRUCTURE', features);
 
 		if (response.status !== 201) {
 			throw new InternalServerErrorException(response.error, { cause: response.details });

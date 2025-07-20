@@ -1,7 +1,9 @@
 import { Module } from "@nestjs/common";
 import { ClientsModule, Transport } from "@nestjs/microservices";
+import { NatsService } from "./nats.service";
 
 @Module({
+    providers: [NatsService],
     imports: [
         ClientsModule.register([
             {
@@ -22,7 +24,8 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
                     servers: process.env.NATS_URL,
                 }
             }
-        ])
+        ]),
+        NatsService,
     ],
 })
 export class NatsClientModule { }

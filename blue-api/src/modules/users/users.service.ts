@@ -1,32 +1,26 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { NatsService } from 'src/infrastructure/nats-client/nats.service';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @Inject('NATS_SERVICE') private readonly nats: ClientProxy
+    private readonly natsService: NatsService,
   ) { }
 
-  private async sendMessage(command: string, data: unknown) {
-    const response = await firstValueFrom(this.nats.send({ cmd: command }, data));
-    return response;
-  }
-
   async create(createUserDto: CreateUserDto) {
-    const response = this.sendMessage('BLACKAPI.CREATEUSER', createUserDto);
+    const response = this.natsService.sendMessage('BLACKAPI.CREATEUSER', createUserDto);
     return response;
   }
 
   async findAll() {
-    const response = this.sendMessage('BLACKAPI.FINDALLUSERS', "");
+    const response = this.natsService.sendMessage('BLACKAPI.FINDALLUSERS', "");
     return response;
   }
 
   async findOne(id: number) {
-    const response = this.sendMessage('BLACKAPI.FINDONEUSER', id);
+    const response = this.natsService.sendMessage('BLACKAPI.FINDONEUSER', id);
     return response;
   }
 
@@ -35,7 +29,7 @@ export class UsersService {
       id,
       ...updateUserDto
     }
-    const response = this.sendMessage(
+    const response = this.natsService.sendMessage(
       'BLACKAPI.UPDATEUSER',
       dataObj
     );
@@ -43,7 +37,7 @@ export class UsersService {
   }
 
   async remove(id: number) {
-    const response = this.sendMessage('BLACKAPI.REMOVEUSER', id);
+    const response = this.natsService.sendMessage('BLACKAPI.REMOVEUSER', id);
     return response;
   }
 }

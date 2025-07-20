@@ -8,7 +8,7 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 export class UsersMicroserviceController {
   constructor(private readonly usersService: UsersService) { }
 
-  @MessagePattern({ cmd: 'BLACKAPI.CREATEUSER' })
+  @MessagePattern('BLACKAPI.CREATEUSER')
   create(@Payload() createUserDto: CreateUserDto) {
     try {
       return this.usersService.create(createUserDto);
@@ -17,7 +17,7 @@ export class UsersMicroserviceController {
     }
   }
 
-  @MessagePattern({ cmd: 'BLACKAPI.FINDALLUSERS' })
+  @MessagePattern('BLACKAPI.FINDALLUSERS')
   findAll() {
     try {
       return this.usersService.findAll();
@@ -26,7 +26,7 @@ export class UsersMicroserviceController {
     }
   }
 
-  @MessagePattern({ cmd: 'BLACKAPI.FINDONEUSER' })
+  @MessagePattern('BLACKAPI.FINDONEUSER')
   findOne(@Payload() id: number) {
     try {
       return this.usersService.findOne(id);
@@ -35,7 +35,7 @@ export class UsersMicroserviceController {
     }
   }
 
-  @MessagePattern({ cmd: 'BLACKAPI.UPDATEUSER' })
+  @MessagePattern('BLACKAPI.UPDATEUSER')
   update(@Payload() data: { id: number, data: UpdateUserDto }) {
     try {
       return this.usersService.update(data);
@@ -44,7 +44,7 @@ export class UsersMicroserviceController {
     }
   }
 
-  @MessagePattern({ cmd: 'BLACKAPI.REMOVEUSER' })
+  @MessagePattern('BLACKAPI.REMOVEUSER')
   remove(@Payload() id: string) {
     return this.usersService.remove(+id);
   }

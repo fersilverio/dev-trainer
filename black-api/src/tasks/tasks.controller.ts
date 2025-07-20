@@ -10,7 +10,7 @@ export class TasksMicroserviceController {
 
   constructor(private readonly tasksService: TasksService) { }
 
-  @MessagePattern({ cmd: 'BLACKAPI.GET.KANBAN.COLUMN.DEFINITIONS' })
+  @MessagePattern('BLACKAPI.GET.KANBAN.COLUMN.DEFINITIONS')
   async getProjectColumnDefinitions() {
     try {
       const columns = await this.tasksService.getProjectColumnDefinitions();
@@ -21,7 +21,7 @@ export class TasksMicroserviceController {
     }
   }
 
-  @MessagePattern({ cmd: 'BLACKAPI.SAVE.KANBAN.COLUMN' })
+  @MessagePattern('BLACKAPI.SAVE.KANBAN.COLUMN')
   async saveKanbanColumn(@Payload() data: CreateKanbanColumnDto) {
     try {
       await this.tasksService.saveKanbanColumn(data);
@@ -32,7 +32,7 @@ export class TasksMicroserviceController {
     }
   }
 
-  @MessagePattern({ cmd: 'BLACKAPI.SAVE.KANBAN.BOARD' })
+  @MessagePattern('BLACKAPI.SAVE.KANBAN.BOARD')
   async saveKanbanBoard() {
     try {
       const result = await this.tasksService.saveKanbanBoard();
@@ -43,7 +43,7 @@ export class TasksMicroserviceController {
     }
   }
 
-  @MessagePattern({ cmd: 'BLACKAPI.SAVE.TASK.STRUCTURE' })
+  @MessagePattern('BLACKAPI.SAVE.TASK.STRUCTURE')
   async saveTaskStructure(@Payload() featureSet: Feature[]) {
     try {
       await this.tasksService.saveTasks(featureSet);
