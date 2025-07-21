@@ -62,7 +62,7 @@ async def main():
     await nats.connect()
 
     if nats.is_connected:
-        listened_subject = "tech.team.kickoff"
+        listened_subject = "WHITEAPI.TECH.TEAM.KICKOFF"
         logging.info(f"[WORKER - Main] Configuring NATS listener for subject: {listened_subject}")
 
         await nats.subscribe(subject=listened_subject, user_request_handler=white_api_kickoff_handler)

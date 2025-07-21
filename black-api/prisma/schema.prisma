@@ -59,11 +59,11 @@ model Project {
   id          Int      @id @default(autoincrement())
   code        String   @unique
   name        String
-  niche       String
-  description String
+  niche       String?
+  description String?
   ownerId     Int
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   owner        User           @relation(fields: [ownerId], references: [id])
   KanbanColumn KanbanColumn[]

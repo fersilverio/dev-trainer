@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { TasksMicroserviceController } from './tasks.controller';
+import { TasksMicroserviceController } from './tasks-microservice.controller';
 import { PrismaService } from 'prisma/prisma.service';
 import { PrismaTasksRepository } from './repositories/prisma/prisma-tasks.repository';
 

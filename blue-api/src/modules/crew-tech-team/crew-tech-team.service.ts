@@ -9,7 +9,7 @@ export class CrewTechTeamService {
 	) { }
 
 	async run(data: unknown): Promise<FeatureSet> {
-		const response = await this.natsService.sendMessage("tech.team.kickoff", data);
+		const response = await this.natsService.sendMessage("WHITEAPI.TECH.TEAM.KICKOFF", data);
 
 		if (response.status !== 200) {
 			throw new InternalServerErrorException(response.error, { cause: response.details })
