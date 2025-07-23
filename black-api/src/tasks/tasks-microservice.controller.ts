@@ -3,6 +3,7 @@ import { TasksService } from './tasks.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { Feature } from './tasks.types';
 import { CreateKanbanColumnDto } from './dtos/create-kanban-column.dto';
+import { ReorderKanbanColumnDto } from './dtos/reorder-kanban-column.dto';
 
 @Controller()
 export class TasksMicroserviceController {
@@ -51,6 +52,17 @@ export class TasksMicroserviceController {
     } catch (error) {
       this.logger.error('Error saving task structure', error);
       return { status: HttpStatus.INTERNAL_SERVER_ERROR, message: 'Failed to save task structure.', error: error.message };
+    }
+  }
+
+  @MessagePattern('BLACKAPI.REORDER.KANBAN.COLUMN')
+  async reorderKanbanColumn(@Payload() data: ReorderKanbanColumnDto) {
+    try {
+      await this.tasksService.reorderKanbanColumn(data);
+      return { status: HttpStatus.OK, message: 'Kanban column reordered successfully.' };
+    } catch (error) {
+      this.logger.error('Error reordering Kanban column', error);
+      return { status: HttpStatus.INTERNAL_SERVER_ERROR, message: 'Failed to reorder Kanban column.', error: error.message };
     }
   }
 }

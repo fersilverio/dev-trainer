@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { CreateKanbanColumnDto } from "./dtos/create-kanban-column.dto";
 import { NatsService } from "src/infrastructure/nats-client/nats.service";
+import { ReorderKanbanColumnDto } from "./dtos/reorder-kanban-column.dto";
 
 @Injectable()
 export class TasksService {
@@ -20,6 +21,11 @@ export class TasksService {
 
     async createKanbanColumn(data: CreateKanbanColumnDto) {
         const response = this.natsService.sendMessage('BLACKAPI.SAVE.KANBAN.COLUMN', data);
+        return response;
+    }
+
+    async reorderKanbanColumn(data: ReorderKanbanColumnDto) {
+        const response = this.natsService.sendMessage('BLACKAPI.REORDER.KANBAN.COLUMN', data);
         return response;
     }
 }

@@ -1,6 +1,7 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post, Put } from "@nestjs/common";
 import { TasksService } from "./tasks.service";
 import { CreateKanbanColumnDto } from "./dtos/create-kanban-column.dto";
+import { ReorderKanbanColumnDto } from "./dtos/reorder-kanban-column.dto";
 
 @Controller('tasks')
 export class TasksController {
@@ -44,5 +45,20 @@ export class TasksController {
             this.logger.error(err.message);
             throw new HttpException('Could not retrieve Kanban column definitions.', HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Put('reorder-kanban-column')
+    async reorderKanbanColumn(@Body() data: ReorderKanbanColumnDto) {
+        try {
+            return await this.tasksService.reorderKanbanColumn(data);
+        } catch (err) {
+            if (err instanceof HttpException) {
+                this.logger.error(err.message);
+                throw err;
+            } else {
+                throw new HttpException('Kanban column could not be reordered.', HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+
     }
 }

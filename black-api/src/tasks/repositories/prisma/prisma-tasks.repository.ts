@@ -3,9 +3,36 @@ import { TasksRepository } from "../tasks.repository";
 import { PrismaService } from "prisma/prisma.service";
 import { CreateKanbanColumnDto } from "src/tasks/dtos/create-kanban-column.dto";
 import { BadRequestException } from "@nestjs/common";
+import { ReorderKanbanColumnDto } from "src/tasks/dtos/reorder-kanban-column.dto";
 
 export class PrismaTasksRepository implements TasksRepository {
     constructor(private readonly prisma: PrismaService) { }
+
+    reorderKanbanColumn(data: ReorderKanbanColumnDto): Promise<void> {
+        return this.prisma.$transaction(async (prisma) => {
+            const { columnId, newOrderArray } = data;
+
+            let position = 0
+
+            for (const taskId of newOrderArray) {
+                const kanbanBoardEntry = await prisma.kanbanBoard.findFirst({
+                    where: {
+                        columnId,
+                        taskId
+                    }
+                });
+
+                if (!kanbanBoardEntry) {
+                    throw new BadRequestException(`Task with ID ${taskId} not found in column ${columnId}.`);
+                }
+
+                await prisma.kanbanBoard.update({
+                    where: { id: kanbanBoardEntry.id },
+                    data: { orderAtColumn: ++position }
+                });
+            }
+        });
+    }
 
     async getProjectColumnDefinitions(): Promise<KanbanBoardRegistry[] | any> {
 
@@ -13,7 +40,11 @@ export class PrismaTasksRepository implements TasksRepository {
             where: { projectId: 2, columnId: 1 }, // projectId is static for now
             include: {
                 kanbanColumn: true,
-                task: true
+                task: {
+                    include: {
+                        feature: true
+                    }
+                },
             },
             orderBy: {
                 orderAtColumn: 'asc'
