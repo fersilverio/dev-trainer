@@ -19,6 +19,8 @@ export type FeatureTask = {
 export type KanbanColumn = {
     id: number;
     title: string;
+    position: number;
+    projectId: number;
     cards: any[];
 };
 

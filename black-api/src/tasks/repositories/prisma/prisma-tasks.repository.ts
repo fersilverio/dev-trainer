@@ -4,6 +4,7 @@ import { PrismaService } from "prisma/prisma.service";
 import { CreateKanbanColumnDto } from "src/tasks/dtos/create-kanban-column.dto";
 import { BadRequestException } from "@nestjs/common";
 import { ReorderKanbanColumnDto } from "src/tasks/dtos/reorder-kanban-column.dto";
+import { KanbanColumn, Prisma } from "@prisma/client";
 
 export class PrismaTasksRepository implements TasksRepository {
     constructor(private readonly prisma: PrismaService) { }
@@ -34,10 +35,32 @@ export class PrismaTasksRepository implements TasksRepository {
         });
     }
 
-    async getProjectColumnDefinitions(): Promise<KanbanBoardRegistry[] | any> {
+    async getProjectColumnDefinitions(): Promise<{ filledColumnsDefinitions: KanbanBoardRegistry[], emptyColumns: KanbanColumn[] } | any> {
+        const projectId = 2; // Static projectId for now
+
+        const emptyColumns = await this.prisma.$queryRaw(Prisma.sql`
+            SELECT
+                kc.id,
+                kc.name,
+                kc.position,
+                kc.projectId
+            FROM kanbanColumns kc
+            LEFT JOIN kanbanBoards kb ON kb.columnId = kc.id
+            WHERE
+                kc.projectId = ${projectId} AND
+                kc.id NOT IN (SELECT columnId FROM kanbanBoards kb GROUP BY columnId)
+        `) as KanbanColumn[];
+
+        const mappedEmptyColumns = emptyColumns.map(column => ({
+            id: column.id,
+            name: column.name,
+            position: column.position,
+            projectId: column.projectId,
+            cards: []
+        }));
 
         const columnDefinitions = await this.prisma.kanbanBoard.findMany({
-            where: { projectId: 2, columnId: 1 }, // projectId is static for now
+            where: { projectId: 2 }, // projectId is static for now
             include: {
                 kanbanColumn: true,
                 task: {
@@ -51,7 +74,10 @@ export class PrismaTasksRepository implements TasksRepository {
             }
         });
 
-        return columnDefinitions;
+        return {
+            filledColumnsDefinitions: columnDefinitions,
+            emptyColumns: mappedEmptyColumns
+        };
     }
 
     async saveKanbanColumn(data: CreateKanbanColumnDto) {
