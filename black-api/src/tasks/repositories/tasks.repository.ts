@@ -1,11 +1,11 @@
 import { CreateKanbanColumnDto } from "../dtos/create-kanban-column.dto";
 import { ReorderKanbanColumnDto } from "../dtos/reorder-kanban-column.dto";
-import { Feature, KanbanBoardRegistry } from "../tasks.types";
+import { Feature, KanbanBoardRegistry, KanbanColumn } from "../tasks.types";
 
 export interface TasksRepository {
     saveTasks(featureSet: Feature[]);
     saveKanbanColumn(data: CreateKanbanColumnDto);
     saveKanbanBoard();
-    getProjectColumnDefinitions(): Promise<KanbanBoardRegistry[]>;
+    getProjectColumnDefinitions(): Promise<{ filledColumnsDefinitions: KanbanBoardRegistry[], emptyColumns: KanbanColumn[] }>;
     reorderKanbanColumn(data: ReorderKanbanColumnDto): Promise<void>;
 }

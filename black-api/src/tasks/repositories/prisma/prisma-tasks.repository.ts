@@ -9,27 +9,29 @@ import { KanbanColumn, Prisma } from "@prisma/client";
 export class PrismaTasksRepository implements TasksRepository {
     constructor(private readonly prisma: PrismaService) { }
 
-    reorderKanbanColumn(data: ReorderKanbanColumnDto): Promise<void> {
+    async reorderKanbanColumn(data: ReorderKanbanColumnDto): Promise<void> {
         return this.prisma.$transaction(async (prisma) => {
             const { columnId, newOrderArray } = data;
 
             let position = 0
 
-            for (const taskId of newOrderArray) {
-                const kanbanBoardEntry = await prisma.kanbanBoard.findFirst({
+            for (const element of newOrderArray) {
+                const kanbanBoardEntry = await prisma.kanbanBoard.findUnique({
                     where: {
-                        columnId,
-                        taskId
+                        taskId: element.taskId
                     }
                 });
 
                 if (!kanbanBoardEntry) {
-                    throw new BadRequestException(`Task with ID ${taskId} not found in column ${columnId}.`);
+                    throw new BadRequestException(`Task with ID ${element.taskId} not found in column ${columnId}.`);
                 }
 
                 await prisma.kanbanBoard.update({
                     where: { id: kanbanBoardEntry.id },
-                    data: { orderAtColumn: ++position }
+                    data: {
+                        orderAtColumn: ++position,
+                        columnId
+                    },
                 });
             }
         });
@@ -52,7 +54,7 @@ export class PrismaTasksRepository implements TasksRepository {
         `) as KanbanColumn[];
 
         const mappedEmptyColumns = emptyColumns.map(column => ({
-            id: column.id,
+            columnId: column.id,
             name: column.name,
             position: column.position,
             projectId: column.projectId,

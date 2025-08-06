@@ -92,7 +92,7 @@ model KanbanColumn {
 model KanbanBoard {
   id            Int      @id @default(autoincrement())
   projectId     Int
-  taskId        Int
+  taskId        Int      @unique
   columnId      Int
   orderAtColumn Int
   createdAt     DateTime @default(now())

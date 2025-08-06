@@ -7,7 +7,6 @@ export class ReorderKanbanColumnDto {
     columnId: number;
 
     @IsNotEmpty()
-    @IsNumber({}, { each: true })
     @IsArray()
-    newOrderArray: number[];
+    newOrderArray: { kanbanRegistryId: number, taskId: number }[];
 }
