@@ -4,7 +4,7 @@ import { Project } from "../entities/project.entity";
 
 export interface ProjectsRepository {
     create(createProjectDto: CreateProjectDto): Promise<Project>;
-    findAll(): Promise<Project[]>;
+    findAll();
     findOne(id: number): Promise<Project>;
     update(id: number, updateProjectDto: UpdateProjectDto): Promise<Project>;
     remove(id: number): Promise<Project>;

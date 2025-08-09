@@ -4,12 +4,13 @@ import { CrewTechTeamModule } from './modules/crew-tech-team/crew-tech-team.modu
 import { TasksModule } from './modules/tasks/tasks.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 
+
 @Module({
   imports: [
     UsersModule,
     CrewTechTeamModule,
     TasksModule,
-    ProjectsModule,
+    ProjectsModule
   ],
   controllers: [],
   providers: [],

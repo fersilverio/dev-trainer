@@ -22,8 +22,23 @@ export class PrismaProjectsRepository implements ProjectsRepository {
         return newProject;
     }
 
-    async findAll(): Promise<Project[]> {
-        return this.prisma.project.findMany();
+    async findAll() {
+        return this.prisma.project.findMany({
+            select: {
+                id: true,
+                code: true,
+                name: true,
+                description: true,
+                niche: true,
+                ownerId: true,
+                createdAt: true,
+                owner: {
+                    select: {
+                        name: true,
+                    }
+                }
+            },
+        });
     }
 
     async findOne(id: number): Promise<Project> {
