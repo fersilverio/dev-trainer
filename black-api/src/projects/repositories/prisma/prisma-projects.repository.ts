@@ -3,10 +3,18 @@ import { UpdateProjectDto } from "src/projects/dto/update-project.dto";
 import { Project } from "src/projects/entities/project.entity";
 import { ProjectsRepository } from "../projects.repository";
 import { PrismaService } from "prisma/prisma.service";
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, Inject } from "@nestjs/common";
+import { TasksRepository } from "src/tasks/repositories/tasks.repository";
 
 export class PrismaProjectsRepository implements ProjectsRepository {
-    constructor(private prisma: PrismaService) { }
+
+
+
+    constructor(
+        private readonly prisma: PrismaService,
+        //@Inject("TasksRepository")
+        private readonly tasksRepository: TasksRepository
+    ) { }
 
     async create(createProjectDto: CreateProjectDto): Promise<Project> {
         const newProject = await this.prisma.project.create({
@@ -23,6 +31,9 @@ export class PrismaProjectsRepository implements ProjectsRepository {
     }
 
     async findAll() {
+        //const teste = await this.tasksRepository.getProjectColumnDefinitions();
+        //console.log(teste);
+
         return this.prisma.project.findMany({
             select: {
                 id: true,

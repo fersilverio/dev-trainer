@@ -13,5 +13,6 @@ import { PrismaTasksRepository } from './repositories/prisma/prisma-tasks.reposi
     },
     inject: [PrismaService],
   }],
+  exports: ["TasksRepository"],
 })
 export class TasksModule { }
