@@ -1,10 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectsRepository } from './repositories/projects.repository';
 
 @Injectable()
 export class ProjectsService {
+  private logger = new Logger(ProjectsService.name);
+
   @Inject("ProjectsRepository")
   private projectsRepository: ProjectsRepository;
 
@@ -13,7 +15,12 @@ export class ProjectsService {
   }
 
   async findAll() {
-    return this.projectsRepository.findAll();
+    try {
+      return this.projectsRepository.findAll();
+    } catch (err) {
+      this.logger.error(err);
+      throw new Error("[BLACK-API] - Could not find projects.");
+    }
   }
 
   async findOne(id: number) {

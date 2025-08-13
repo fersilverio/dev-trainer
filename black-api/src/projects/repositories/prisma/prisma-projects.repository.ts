@@ -31,10 +31,8 @@ export class PrismaProjectsRepository implements ProjectsRepository {
     }
 
     async findAll() {
-        //const teste = await this.tasksRepository.getProjectColumnDefinitions();
-        //console.log(teste);
 
-        return this.prisma.project.findMany({
+        const projectsBasicInfo = await this.prisma.project.findMany({
             select: {
                 id: true,
                 code: true,
@@ -50,6 +48,13 @@ export class PrismaProjectsRepository implements ProjectsRepository {
                 }
             },
         });
+
+        const projectsCompleteInfo = await Promise.all(projectsBasicInfo.map(async project => ({
+            ...project,
+            projectTasksInfo: await this.tasksRepository.getInfoAboutProjectTasks(project.id)
+        })));
+
+        return projectsCompleteInfo;
     }
 
     async findOne(id: number): Promise<Project> {

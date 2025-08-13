@@ -1,11 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Logger } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Controller('projects')
 export class ProjectsController {
-  constructor(private readonly projectsService: ProjectsService) {}
+  private readonly logger = new Logger(ProjectsController.name);
+
+  constructor(private readonly projectsService: ProjectsService) { }
 
   @Post()
   create(@Body() createProjectDto: CreateProjectDto) {
@@ -14,7 +16,12 @@ export class ProjectsController {
 
   @Get()
   findAll() {
-    return this.projectsService.findAll();
+    try {
+      return this.projectsService.findAll();
+    } catch (error) {
+      this.logger.error('Error fetching projects:', error);
+      throw error;
+    }
   }
 
   @Get(':id')

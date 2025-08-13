@@ -1,4 +1,4 @@
-import { Feature, KanbanBoardRegistry } from "src/tasks/tasks.types";
+import { Feature, KanbanBoardRegistry, TasksFromProjectInfo } from "src/tasks/tasks.types";
 import { TasksRepository } from "../tasks.repository";
 import { PrismaService } from "prisma/prisma.service";
 import { CreateKanbanColumnDto } from "src/tasks/dtos/create-kanban-column.dto";
@@ -162,6 +162,48 @@ export class PrismaTasksRepository implements TasksRepository {
                     };
                 })
             });
+        }
+    }
+
+    async getInfoAboutProjectTasks(projectId: number): Promise<TasksFromProjectInfo | undefined> {
+        const tasksFromProject = await this.prisma.taskProject.findMany({
+            where: { projectId },
+            select: {
+                taskId: true,
+            },
+        });
+
+        const lastKanbanColumn = await this.prisma.kanbanColumn.findMany({
+            select: {
+                id: true,
+            },
+            where: { projectId },
+            orderBy: { position: 'desc' },
+            take: 1,
+        });
+
+        if (lastKanbanColumn.length > 0) {
+            let numberOfFinishedTasks = 0;
+            const lastColumnId = lastKanbanColumn[0].id;
+
+            numberOfFinishedTasks = await this.prisma.kanbanBoard.count({
+                where: {
+                    columnId: lastColumnId,
+                    projectId,
+                },
+            });
+
+            const numberOfTasks = tasksFromProject.length;
+
+            return {
+                numberOfTasks,
+                numberOfFinishedTasks,
+            };
+        } else {
+            return {
+                numberOfTasks: 0,
+                numberOfFinishedTasks: 0,
+            };
         }
     }
 

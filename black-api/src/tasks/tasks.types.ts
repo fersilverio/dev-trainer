@@ -50,3 +50,8 @@ export type KanbanBoardRegistry = {
     orderAtColumn: number;
     createdAt: Date;
 };
+
+export type TasksFromProjectInfo = {
+    numberOfTasks: number;
+    numberOfFinishedTasks: number;
+};
