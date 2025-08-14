@@ -98,17 +98,20 @@ export class PrismaTasksRepository implements TasksRepository {
     }
 
     async saveKanbanBoard() {
-        const columnId = await this.prisma.kanbanColumn.findFirst({
+        const firstProjectColumn = await this.prisma.kanbanColumn.findFirst({
             select: {
                 id: true
             },
             where: {
                 projectId: 2, // projectId is static for now
-                position: 1
             },
+            orderBy: {
+                position: 'asc'
+            },
+            take: 1
         });
 
-        if (!columnId) {
+        if (!firstProjectColumn) {
             throw new BadRequestException("No kanban column found for the project.");
         } else {
             const projectFeatures = await this.prisma.feature.findMany({
@@ -127,13 +130,13 @@ export class PrismaTasksRepository implements TasksRepository {
                     data: tasks.map((task, index) => ({
                         projectId: 2, // projectId is static for now
                         taskId: task.id,
-                        columnId: columnId.id,
+                        columnId: firstProjectColumn.id,
                         orderAtColumn: positionAtColumnCounter + 1,
                     }))
                 });
             }
 
-            await this.setInitialPositionsAtColumn();
+            await this.setInitialPositionsAtColumn(firstProjectColumn.id);
         }
     }
 
@@ -207,14 +210,14 @@ export class PrismaTasksRepository implements TasksRepository {
         }
     }
 
-    private async setInitialPositionsAtColumn() {
-        const firstProjectColumn = await this.prisma.kanbanBoard.findMany({
-            where: { columnId: 1, projectId: 2 }, // Assuming we want to update the first kanban board
+    private async setInitialPositionsAtColumn(fisrtColumnId: number) {
+        const firstProjectColumnElements = await this.prisma.kanbanBoard.findMany({
+            where: { columnId: fisrtColumnId, projectId: 2 }, // Assuming we want to update the first kanban board
         });
 
         let initialPositionAtColumn = 0;
 
-        for (const element of firstProjectColumn) {
+        for (const element of firstProjectColumnElements) {
             await this.prisma.kanbanBoard.update({
                 where: { id: element.id },
                 data: { orderAtColumn: ++initialPositionAtColumn }
