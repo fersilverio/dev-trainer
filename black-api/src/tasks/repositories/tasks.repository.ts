@@ -7,6 +7,6 @@ export interface TasksRepository {
     saveKanbanColumn(data: CreateKanbanColumnDto);
     getInfoAboutProjectTasks(projectId: number): Promise<TasksFromProjectInfo | undefined>;
     saveKanbanBoard();
-    getProjectColumnDefinitions(): Promise<{ filledColumnsDefinitions: KanbanBoardRegistry[], emptyColumns: KanbanColumn[] }>;
+    getProjectColumnDefinitions(projectId: number): Promise<{ filledColumnsDefinitions: KanbanBoardRegistry[], emptyColumns: KanbanColumn[] }>;
     reorderKanbanColumn(data: ReorderKanbanColumnDto): Promise<void>;
 }

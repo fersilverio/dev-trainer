@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post, Put } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, HttpStatus, Logger, Param, Post, Put } from "@nestjs/common";
 import { TasksService } from "./tasks.service";
 import { CreateKanbanColumnDto } from "./dtos/create-kanban-column.dto";
 import { ReorderKanbanColumnDto } from "./dtos/reorder-kanban-column.dto";
@@ -37,10 +37,10 @@ export class TasksController {
         }
     }
 
-    @Get('kanban-column-definitions')
-    async getKanbanColumnDefinitions() {
+    @Get('/:projectId/kanban-column-definitions')
+    async getKanbanColumnDefinitions(@Param("projectId") projectId: string) {
         try {
-            return await this.tasksService.getKanbanColumnDefinitions();
+            return await this.tasksService.getKanbanColumnDefinitions(projectId);
         } catch (err) {
             this.logger.error(err.message);
             throw new HttpException('Could not retrieve Kanban column definitions.', HttpStatus.INTERNAL_SERVER_ERROR);

@@ -13,8 +13,8 @@ export class TasksService {
         return this.tasksRepository.reorderKanbanColumn(data);
     }
 
-    async getProjectColumnDefinitions() {
-        return this.tasksRepository.getProjectColumnDefinitions();
+    async getProjectColumnDefinitions(projectId: number) {
+        return this.tasksRepository.getProjectColumnDefinitions(projectId);
     }
 
     async saveKanbanColumn(data: CreateKanbanColumnDto) {

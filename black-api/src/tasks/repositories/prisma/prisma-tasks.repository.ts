@@ -37,8 +37,7 @@ export class PrismaTasksRepository implements TasksRepository {
         });
     }
 
-    async getProjectColumnDefinitions(): Promise<{ filledColumnsDefinitions: KanbanBoardRegistry[], emptyColumns: KanbanColumn[] } | any> {
-        const projectId = 2; // Static projectId for now
+    async getProjectColumnDefinitions(projectId: number): Promise<{ filledColumnsDefinitions: KanbanBoardRegistry[], emptyColumns: KanbanColumn[] } | any> {
 
         const emptyColumns = await this.prisma.$queryRaw(Prisma.sql`
             SELECT
@@ -62,7 +61,7 @@ export class PrismaTasksRepository implements TasksRepository {
         }));
 
         const columnDefinitions = await this.prisma.kanbanBoard.findMany({
-            where: { projectId: 2 }, // projectId is static for now
+            where: { projectId },
             include: {
                 kanbanColumn: true,
                 task: {

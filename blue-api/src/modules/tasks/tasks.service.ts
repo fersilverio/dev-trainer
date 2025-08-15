@@ -9,8 +9,8 @@ export class TasksService {
         private readonly natsService: NatsService,
     ) { }
 
-    async getKanbanColumnDefinitions() {
-        const response = this.natsService.sendMessage('BLACKAPI.GET.KANBAN.COLUMN.DEFINITIONS', {});
+    async getKanbanColumnDefinitions(projectId: string) {
+        const response = this.natsService.sendMessage('BLACKAPI.GET.KANBAN.COLUMN.DEFINITIONS', projectId);
         return response;
     }
 

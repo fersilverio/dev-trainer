@@ -12,9 +12,9 @@ export class TasksMicroserviceController {
   constructor(private readonly tasksService: TasksService) { }
 
   @MessagePattern('BLACKAPI.GET.KANBAN.COLUMN.DEFINITIONS')
-  async getProjectColumnDefinitions() {
+  async getProjectColumnDefinitions(@Payload() projectId: string) {
     try {
-      const columns = await this.tasksService.getProjectColumnDefinitions();
+      const columns = await this.tasksService.getProjectColumnDefinitions(+projectId);
       return { status: HttpStatus.OK, data: columns };
     } catch (error) {
       this.logger.error('Error fetching project column definitions', error);
