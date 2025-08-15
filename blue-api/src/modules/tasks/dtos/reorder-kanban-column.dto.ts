@@ -1,10 +1,11 @@
-import { IsArray, IsNotEmpty, IsNumber } from "class-validator";
+import { Transform } from "class-transformer";
+import { IsArray, IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class ReorderKanbanColumnDto {
 
-    @IsNumber()
+    @IsString()
     @IsNotEmpty()
-    columnId: number;
+    columnId: string;
 
     @IsNotEmpty()
     @IsArray()

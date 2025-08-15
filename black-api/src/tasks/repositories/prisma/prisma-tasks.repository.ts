@@ -30,7 +30,7 @@ export class PrismaTasksRepository implements TasksRepository {
                     where: { id: kanbanBoardEntry.id },
                     data: {
                         orderAtColumn: ++position,
-                        columnId
+                        columnId: +columnId
                     },
                 });
             }

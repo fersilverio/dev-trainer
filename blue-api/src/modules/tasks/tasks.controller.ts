@@ -56,6 +56,7 @@ export class TasksController {
                 this.logger.error(err.message);
                 throw err;
             } else {
+                this.logger.error(err.message);
                 throw new HttpException('Kanban column could not be reordered.', HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
