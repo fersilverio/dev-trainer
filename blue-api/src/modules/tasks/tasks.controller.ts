@@ -47,6 +47,16 @@ export class TasksController {
         }
     }
 
+    @Get('/:projectId/kanban-columns')
+    async getProjectKanbanColumns(@Param("projectId") projectId: string) {
+        try {
+            return await this.tasksService.getProjectKanbanColumns(projectId);
+        } catch (err) {
+            this.logger.error(err.message);
+            throw new HttpException('Could not retrieve Kanban columns.', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @Put('reorder-kanban-column')
     async reorderKanbanColumn(@Body() data: ReorderKanbanColumnDto) {
         try {

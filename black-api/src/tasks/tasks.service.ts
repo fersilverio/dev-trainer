@@ -17,6 +17,10 @@ export class TasksService {
         return this.tasksRepository.getProjectColumnDefinitions(projectId);
     }
 
+    async getProjectKanbanColumns(projectId: number) {
+        return this.tasksRepository.getProjectKanbanColumns(projectId);
+    }
+
     async saveKanbanColumn(data: CreateKanbanColumnDto) {
         return this.tasksRepository.saveKanbanColumn(data);
     }

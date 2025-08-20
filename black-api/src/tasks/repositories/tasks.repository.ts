@@ -5,6 +5,7 @@ import { Feature, KanbanBoardRegistry, KanbanColumn, TasksFromProjectInfo } from
 export interface TasksRepository {
     saveTasks(featureSet: Feature[]);
     saveKanbanColumn(data: CreateKanbanColumnDto);
+    getProjectKanbanColumns(projectId: number): Promise<Partial<KanbanColumn>[]>;
     getInfoAboutProjectTasks(projectId: number): Promise<TasksFromProjectInfo | undefined>;
     saveKanbanBoard();
     getProjectColumnDefinitions(projectId: number): Promise<{ filledColumnsDefinitions: KanbanBoardRegistry[], emptyColumns: KanbanColumn[] }>;

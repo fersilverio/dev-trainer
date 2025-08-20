@@ -37,6 +37,15 @@ export class PrismaTasksRepository implements TasksRepository {
         });
     }
 
+    async getProjectKanbanColumns(projectId: number): Promise<KanbanColumn[]> {
+        const columns = await this.prisma.kanbanColumn.findMany({
+            where: { projectId },
+            orderBy: { position: 'asc' }
+        });
+
+        return columns;
+    }
+
     async getProjectColumnDefinitions(projectId: number): Promise<{ filledColumnsDefinitions: KanbanBoardRegistry[], emptyColumns: KanbanColumn[] } | any> {
 
         const emptyColumns = await this.prisma.$queryRaw(Prisma.sql`

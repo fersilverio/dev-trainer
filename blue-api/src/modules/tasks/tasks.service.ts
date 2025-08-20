@@ -14,6 +14,11 @@ export class TasksService {
         return response;
     }
 
+    async getProjectKanbanColumns(projectId: string) {
+        const response = this.natsService.sendMessage('BLACKAPI.GET.PROJECT.KANBAN.COLUMNS', projectId);
+        return response;
+    }
+
     async createKanbanBoard() {
         const response = this.natsService.sendMessage('BLACKAPI.SAVE.KANBAN.BOARD', {});
         return response;

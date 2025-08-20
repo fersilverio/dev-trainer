@@ -33,6 +33,17 @@ export class TasksMicroserviceController {
     }
   }
 
+  @MessagePattern('BLACKAPI.GET.PROJECT.KANBAN.COLUMNS')
+  async getProjectKanbanColumns(@Payload() projectId: string) {
+    try {
+      const columns = await this.tasksService.getProjectKanbanColumns(+projectId);
+      return { status: HttpStatus.OK, data: columns };
+    } catch (error) {
+      this.logger.error('Error fetching project Kanban columns', error);
+      return { status: HttpStatus.INTERNAL_SERVER_ERROR, message: 'Failed to fetch project Kanban columns.', error: error.message };
+    }
+  }
+
   @MessagePattern('BLACKAPI.SAVE.KANBAN.BOARD')
   async saveKanbanBoard() {
     try {
